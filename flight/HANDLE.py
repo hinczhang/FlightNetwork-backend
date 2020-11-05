@@ -23,9 +23,11 @@ average_clustering
 transitivity
 global_efficiency
 reciprocity
+
 '''
 '''
 # spatial
+average_degree_connectivity
 average_neighbor_degree
 degree_centrality
 pagerank
