@@ -27,7 +27,7 @@ reciprocity
 '''
 '''
 # spatial
-average_degree_connectivity
+closeness_centrality
 average_neighbor_degree
 degree_centrality
 pagerank
