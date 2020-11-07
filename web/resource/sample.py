@@ -48,33 +48,37 @@ class Sample(Resource):
 		elif flag==5:
 			date=json.loads(request.data)['date']
 			attribute=int(json.loads(request.data)['attribute'])
-			csv=pd.read_csv("./flight/"+str(date)+".csv")
-			coords={}
-			G=nx.DiGraph()
-			for index, row in csv.iterrows():
-				G.add_edge(row['origin'],row['destination'])
-				coords[row['origin']]={'point':[row['org_latitude_deg'],row['org_longitude_deg']],'country':row['org_iso_country']}
-				coords[row['destination']]={'point':[row['dst_latitude_deg'],row['dst_longitude_deg']],'country':row['dst_iso_country']}
+			csv=pd.read_csv("./spatial/"+str(date)+".csv")
 			array=[]
-			if attribute!=6:
-				result=None
-				if attribute==1:
-					result=nx.closeness_centrality(G)
-				elif attribute==2:
-					result=nx.average_neighbor_degree(G)
-				elif attribute==3:
-					result=nx.degree_centrality(G)
-				elif attribute==4:
-					result=nx.pagerank(G)
-				elif attribute==5:
-					result=nx.hits(G)[0]
-				for item in result.keys():
-					array.append({'name':item,'value':[coords[item]['point'][1],coords[item]['point'][0],0],'index':result[item]})
-			else:
-				result=nx.degree(G)
-				for item in result:
-					array.append({'name':item[0],'value':[coords[item[0]]['point'][1],coords[item[0]]['point'][0],0],'index':item[1]})
 
+			result=None
+			if attribute==1:
+				result=csv[['id','lat','lon','closeness_centrality']]
+				result=result.rename(columns={"closeness_centrality":"index"})
+				result=result.to_dict(orient='records')
+			elif attribute==2:
+				result=csv[['id','lat','lon','average_neighbor_degree']]
+				result=result.rename(columns={"average_neighbor_degree":"index"})
+				result=result.to_dict(orient='records')
+			elif attribute==3:
+				result=csv[['id','lat','lon','degree_centrality']]
+				result=result.rename(columns={"degree_centrality":"index"})
+				result=result.to_dict(orient='records')
+			elif attribute==4:
+				result=csv[['id','lat','lon','pagerank']]
+				result=result.rename(columns={"pagerank":"index"})
+				result=result.to_dict(orient='records')
+			elif attribute==5:
+				result=csv[['id','lat','lon','hits']]
+				result=result.rename(columns={"hits":"index"})
+				result=result.to_dict(orient='records')
+			else:
+				result=csv[['id','lat','lon','degree']]
+				result=result.rename(columns={"degree":"index"})
+				result=result.to_dict(orient='records')
+
+			for item in result:
+				array.append({'name':item['id'],'value':[item['lon'],item['lat'],0],'index':item['index']})
 			data = json.dumps({'array':array})
 			print("handle sptial data finish")
 		res = Response(response=data, status=200, mimetype="application/json")#send message to frontend
