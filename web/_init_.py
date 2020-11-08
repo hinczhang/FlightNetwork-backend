@@ -1,7 +1,7 @@
 from flask import Flask, request, redirect, url_for
 from flask_restful import Api
 from flask_cors import CORS
-
+from flask import Response
 #start import block; free edit
 from web.resource.sample import Sample
 
@@ -17,3 +17,7 @@ api = Api(app)
 api.add_resource(Sample, '/api/index')
 
 #end mode-use block
+@app.route('*',methods=['GET'])
+def return_HTML():
+	html=open('./dist/index.html')
+	res = Response(response=html)
